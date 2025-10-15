@@ -64,17 +64,18 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
 
         var job: Job? = null
-        binding.searchEdit.addTextChangedListener(){editable ->
+
+        binding.searchEdit.addTextChangedListener { editable ->
             job?.cancel()
             job = MainScope().launch {
                 delay(SEARCH_NEWS_TIME_DELAY)
-                editable?.let{
-                    if (editable.toString().isNotEmpty()){
-                        newsViewModel.searchNews(editable.toString())
-                    }
+                val query = editable?.toString() ?: ""
+                validateSearchQuery(query)?.let { safeQuery ->
+                    newsViewModel.searchNews(safeQuery)
                 }
             }
         }
+
 
         newsViewModel.searchNews.observe(viewLifecycleOwner, Observer { response ->
             when(response){
@@ -119,6 +120,16 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     var isLoading = false
     var isLastPage = false
 
+
+
+    private fun validateSearchQuery(query: String): String? {
+        return when {
+            query.isBlank() -> null // ignore empty input
+            query.length > 100 -> null // limit very long inputs
+            query.contains("<script>", ignoreCase = true) -> null // block potential script tags
+            else -> query.trim() // return clean query
+        }
+    }
 
 
     private fun hideProgressBar(){
