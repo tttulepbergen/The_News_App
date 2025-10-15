@@ -5,6 +5,13 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
+// читаем NEWS_API_KEY из local.properties
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val apiKey = localProps.getProperty("NEWS_API_KEY") ?: ""
+
 android {
     namespace = "com.example.thenewsapp"
     compileSdk = 34
@@ -15,6 +22,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        // пробрасываем ключ в BuildConfig
+        buildConfigField("String", "NEWS_API_KEY", "\"$apiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
