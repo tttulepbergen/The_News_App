@@ -12,6 +12,9 @@ val localProps = Properties().apply {
 }
 val apiKey = localProps.getProperty("NEWS_API_KEY") ?: ""
 
+val baseUrl = localProps.getProperty("BASE_URL") ?: ""
+
+
 android {
     namespace = "com.example.thenewsapp"
     compileSdk = 34
@@ -25,6 +28,8 @@ android {
 
         // пробрасываем ключ в BuildConfig
         buildConfigField("String", "NEWS_API_KEY", "\"$apiKey\"")
+
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
